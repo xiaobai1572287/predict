@@ -1,0 +1,31 @@
+import os
+import pandas as pd
+import radiomics
+from radiomics import featureextractor, imageoperations
+
+settings = {
+    'binWidth': 25,
+    'resampledPixelSpacing': [1, 1, 1],
+    'interpolator': sitkBSpline,
+    'label': 1,
+    'force2D': True,
+    'force2Ddimension': 0,
+    'normalize': True
+    'LoG:{'sigma': [1.0, 3.0]}'
+}
+
+extractor = radiomics.featureextractor.RadiomicsFeatureExtractor(**settings)
+
+image_file = 'path/to/your/ct_image.dcm'
+mask_file = 'path/to/your/mask_image.dcm'
+
+try:
+    featureVector = extractor.execute(image_file, mask_file)
+except Exception as e:
+    print(f'Error during feature extraction: {e}')
+else:
+    features_df = pd.DataFrame.from_dict(featureVector, orient='index')
+    features_df.columns = ['Value']
+    features_df.index.name = 'Feature'
+    print(features_df)
+    features_df.to_csv('path/to/output/features.csv')
